@@ -56,7 +56,7 @@ export default function Home() {
           />
         </div> */}
 
-        <h1 className="text-2xl font-semibold text-gray-900">Welcome to ADM</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Welcome!</h1>
         <p className="text-sm text-gray-600">To get started, please sign in</p>
 
         {errorMessage && (
