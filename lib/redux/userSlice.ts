@@ -6,9 +6,7 @@ interface ExtendedUser extends User {
   system_user_id?: number
   org_id?: number
   type?: string
-  admin: boolean
   name?: string
-  location_ids?: string[]
 }
 
 interface UserState {

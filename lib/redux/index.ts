@@ -1,15 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import listReducer from './listSlice'
-import locationReducer from './locationSlice'
-import locationsReducer from './locationsSlice'
 import stocksReducer from './stocksSlice'
 import userReducer from './userSlice'
 
 export const store = configureStore({
   reducer: {
-    location: locationReducer,
-    list: listReducer,
-    locationsList: locationsReducer,
     user: userReducer,
     stocksList: stocksReducer
   }

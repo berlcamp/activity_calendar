@@ -11,7 +11,7 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       db: {
-        schema: 'asenso' // ✅ Use the custom schema by default
+        schema: 'activity_calendar' // ✅ Use the custom schema by default
       },
       cookies: {
         getAll() {

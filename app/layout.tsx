@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'ADB',
-  description: 'ADB App'
+  title: 'AO Calendar',
+  description: 'AO Calendar'
 }
 
 export default function RootLayout({

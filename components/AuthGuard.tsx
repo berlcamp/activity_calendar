@@ -1,6 +1,5 @@
 'use client'
 
-import { addList } from '@/lib/redux/locationsSlice'
 import { setUser } from '@/lib/redux/userSlice'
 import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -42,68 +41,14 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         return
       }
 
-      // Fetch locations the user is allowed to access
-      try {
-        let locations = []
-        let admin = false
-        // Super admins
-        if (
-          ['berlcamp@gmail.com', 'indy.oaminal@gmail.com'].includes(
-            systemUser.email
-          )
-        ) {
-          const { data, error } = await supabase
-            .from('locations')
-            .select('*')
-            .eq('org_id', process.env.NEXT_PUBLIC_ORG_ID)
-            .order('id', { ascending: true })
-
-          if (error) throw error
-          locations = data
-          admin = true
-        } else {
-          // Regular user: fetch locations they have access to
-          const { data: allowed, error: allowedError } = await supabase
-            .from('location_users')
-            .select('location_id')
-            .eq('user_id', systemUser.id)
-
-          if (allowedError) throw allowedError
-
-          const locationIds = allowed.map((b) => b.location_id)
-          if (locationIds.length === 0) {
-            locations = []
-          } else {
-            const idList = `(${locationIds.join(',')})`
-
-            const { data, error } = await supabase
-              .from('locations')
-              .select('*')
-              .eq('org_id', process.env.NEXT_PUBLIC_ORG_ID)
-              .filter('id', 'in', idList)
-              .order('id', { ascending: true })
-
-            if (error) throw error
-            locations = data
-          }
-        }
-
-        // Update state
-        dispatch(addList(locations))
-
-        dispatch(
-          setUser({
-            ...session.user,
-            system_user_id: systemUser.id,
-            admin,
-            name: systemUser.name,
-            type: systemUser.type,
-            location_ids: locations.length > 0 ? locations.map((b) => b.id) : []
-          })
-        )
-      } catch (error) {
-        console.error('Failed to load locations:', error)
-      }
+      dispatch(
+        setUser({
+          ...session.user,
+          system_user_id: systemUser.id,
+          name: systemUser.name,
+          type: systemUser.type
+        })
+      )
 
       setLoading(false)
     }
