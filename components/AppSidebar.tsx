@@ -1,6 +1,6 @@
 'use client'
 
-import { Calendar, Home } from 'lucide-react'
+import { Calendar, Home, Users2 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -25,6 +25,11 @@ const items = [
     title: 'Calendar',
     url: '/calendar',
     icon: Calendar
+  },
+  {
+    title: 'HR - Employees',
+    url: '/hr',
+    icon: Users2
   }
 ]
 

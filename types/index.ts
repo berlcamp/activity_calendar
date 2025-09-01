@@ -14,7 +14,6 @@ export interface User {
   created_at?: string
 }
 
-// DB type
 export interface Activity {
   id: number
   type: string
@@ -23,4 +22,13 @@ export interface Activity {
   location: string | null
   from: string | null
   user_id: number | null
+}
+
+export interface Employee {
+  id: number
+  id_number: string
+  firstname: string
+  middlename: string
+  lastname: string
+  department: string
 }

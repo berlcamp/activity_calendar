@@ -26,7 +26,7 @@ export default function AuthLayout({
               <AppSidebar />
               <StickyHeader />
               <main className="w-full">
-                <div className="mt-16">{children}</div>
+                <div className="mt-16 p-4">{children}</div>
               </main>
             </SidebarProvider>
           </AuthGuard>

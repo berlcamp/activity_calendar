@@ -8,8 +8,8 @@ const initialState = {
   value: [] as any[] // Replace `any[]` with a specific type (e.g., `Supplier[]`) if needed
 }
 
-export const stocksSlice = createSlice({
-  name: 'stocksList', // Name of the slice
+export const listSlice = createSlice({
+  name: 'list', // Name of the slice
   initialState,
   reducers: {
     // add to list
@@ -37,6 +37,6 @@ export const stocksSlice = createSlice({
   }
 })
 
-export const { addList, updateList, addItem, deleteItem } = stocksSlice.actions
+export const { addList, updateList, addItem, deleteItem } = listSlice.actions
 
-export default stocksSlice.reducer
+export default listSlice.reducer

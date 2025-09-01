@@ -70,11 +70,11 @@ export default function PrintActivities({
             .location { font-size: 12px; color: #6b7280; margin-top: 2px; }
             .from-tag { font-size: 12px; background: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 9999px; white-space: nowrap; }
             /* 🎨 Type badges */
-            .tag { font-size: 12px; padding: 2px 6px; border-radius: 9999px; white-space: nowrap; display: inline-block; }
+            .tag { font-size: 12px; font-weight:600; padding: 2px 6px; border-radius: 9999px; white-space: nowrap; display: inline-block; }
             .tag-national { background: #dbeafe; color: #1e40af; }   /* blue */
-            .tag-lgu { background: #dcfce7; color: #166534; }        /* green */
-            .tag-barangay { background: #fef9c3; color: #854d0e; }   /* yellow */
-            .tag-default { background: #e0e7ff; color: #4338ca; }    /* indigo */
+            .tag-lgu { color: #166534; }        /* green */
+            .tag-barangay { color: #854d0e; }   /* yellow */
+            .tag-default { color: #4338ca; }    /* indigo */
           </style>
         </head>
         <body>
@@ -96,12 +96,20 @@ export default function PrintActivities({
                 ${items
                   .map(
                     (a) => `
-                    <div class="activity-card">
+                    <div class="activity-card ${
+                      a.type === 'National Agency'
+                        ? 'tag-national'
+                        : a.type === 'LGU'
+                          ? 'tag-lgu'
+                          : a.type === 'Barangay'
+                            ? 'tag-barangay'
+                            : 'tag-default'
+                    }">
                       <div>
                         <div class="particulars">${a.particulars ?? ''}</div>
                         ${
                           a.location
-                            ? `<div class="location">${a.location}</div>`
+                            ? `<div class="location">${a.from} | ${a.location}</div>`
                             : ''
                         }
                       </div>
@@ -109,9 +117,9 @@ export default function PrintActivities({
                       <div class="tag ${
                         a.type === 'National Agency'
                           ? 'tag-national'
-                          : a.type === 'LGU Activity'
+                          : a.type === 'LGU'
                             ? 'tag-lgu'
-                            : a.type === 'Barangay Activity'
+                            : a.type === 'Barangay'
                               ? 'tag-barangay'
                               : 'tag-default'
                       }">

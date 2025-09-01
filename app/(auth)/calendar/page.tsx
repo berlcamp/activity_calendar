@@ -39,10 +39,13 @@ import {
   format,
   isSameDay,
   isSameMonth,
+  isWithinInterval,
   startOfMonth,
   startOfWeek,
   subMonths
 } from 'date-fns'
+
+import { XCircle } from 'lucide-react'
 import { JSX, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -63,10 +66,15 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true)
 
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [view, setView] = useState<'month' | 'week' | 'list'>('month')
+  const [view, setView] = useState<
+    'month' | 'week' | 'search-results' | 'list'
+  >('month')
   const [selected, setSelected] = useState<Activity | null>(null)
   const [open, setOpen] = useState(false)
   const [isNew, setIsNew] = useState(false)
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('') // ✅ add state for search input
 
   // form state
   const form = useForm<ActivityFormValues>({
@@ -100,14 +108,32 @@ export default function CalendarPage() {
     fetchActivities()
   }, [])
 
+  const handleSearch = async (term: string) => {
+    if (!term.trim()) return
+    setLoading(true)
+
+    const { data, error } = await supabase.rpc('search_activities', {
+      search_term: term
+    }) // use a custom function
+    if (error) {
+      console.error(error)
+    } else {
+      setActivities(data as Activity[])
+    }
+    setView('search-results')
+    setLoading(false)
+  }
+
   // --- Navigation ---
   const goPrev = () => {
-    if (view === 'month') setCurrentDate(subMonths(currentDate, 1))
+    if (view === 'month' || view === 'list')
+      setCurrentDate(subMonths(currentDate, 1))
     else setCurrentDate(addDays(currentDate, -7))
   }
 
   const goNext = () => {
-    if (view === 'month') setCurrentDate(addMonths(currentDate, 1))
+    if (view === 'month' || view === 'list')
+      setCurrentDate(addMonths(currentDate, 1))
     else setCurrentDate(addDays(currentDate, 7))
   }
 
@@ -152,16 +178,16 @@ export default function CalendarPage() {
     await fetchActivities()
   }
 
-  const handleDelete = async () => {
-    if (!selected) return
-    const { error } = await supabase
-      .from('activities')
-      .delete()
-      .eq('id', selected.id)
-    if (error) console.error(error)
-    setOpen(false)
-    await fetchActivities()
-  }
+  // const handleDelete = async () => {
+  //   if (!selected) return
+  //   const { error } = await supabase
+  //     .from('activities')
+  //     .delete()
+  //     .eq('id', selected.id)
+  //   if (error) console.error(error)
+  //   setOpen(false)
+  //   await fetchActivities()
+  // }
 
   // --- Open editor ---
   const openNew = () => {
@@ -309,6 +335,88 @@ export default function CalendarPage() {
 
   // --- Render List View ---
   const renderList = () => {
+    const monthStart = startOfMonth(currentDate)
+    const monthEnd = endOfMonth(monthStart)
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 0 }) // Sunday
+    const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 }) // Saturday
+
+    // filter only activities within this calendar window
+    const filtered = activities.filter((a) =>
+      a.date
+        ? isWithinInterval(new Date(a.date), { start: startDate, end: endDate })
+        : false
+    )
+
+    const sorted = [...filtered].sort((a, b) =>
+      compareAsc(new Date(a.date ?? ''), new Date(b.date ?? ''))
+    )
+
+    // group by date
+    const grouped = sorted.reduce<Record<string, typeof activities>>(
+      (acc, a) => {
+        const key = a.date ? format(new Date(a.date), 'yyyy-MM-dd') : 'no-date'
+        acc[key] = acc[key] || []
+        acc[key].push(a)
+        return acc
+      },
+      {}
+    )
+
+    return (
+      <div className="divide-y">
+        {Object.entries(grouped).length === 0 && (
+          <div className="py-6 text-center text-gray-500 italic">
+            No activities found
+          </div>
+        )}
+        {Object.entries(grouped).map(([date, items]) => (
+          <div key={date} className="py-4">
+            {/* Date header */}
+            <div className="flex items-baseline mb-2">
+              <div className="text-3xl font-bold text-indigo-600 w-12 text-center">
+                {date !== 'no-date' ? format(new Date(date), 'd') : '—'}
+              </div>
+              <div className="ml-2 text-sm text-gray-500">
+                {date !== 'no-date'
+                  ? format(new Date(date), 'EEEE, MMMM d, yyyy')
+                  : 'No Date'}
+              </div>
+            </div>
+
+            {/* Activities for that date */}
+            <div className="space-y-2">
+              {items.map((a) => (
+                <div
+                  key={a.id}
+                  className="p-3 rounded-lg border hover:bg-gray-50 flex justify-between items-start cursor-pointer transition"
+                  onClick={() => openEdit(a)}
+                >
+                  <div>
+                    <div className="text-sm font-medium">{a.particulars}</div>
+
+                    <div className="text-xs text-gray-500">
+                      {a.from} | {a.location}
+                    </div>
+                  </div>
+                  <div
+                    className={`text-xs ${
+                      activityTypeColors[a.type] ||
+                      'bg-indigo-100 text-indigo-700'
+                    } px-2 py-0.5 rounded-full`}
+                  >
+                    {a.type}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  // --- Render Search Results View ---
+  const renderSearchResults = () => {
     const sorted = [...activities].sort((a, b) =>
       compareAsc(new Date(a.date ?? ''), new Date(b.date ?? ''))
     )
@@ -326,6 +434,11 @@ export default function CalendarPage() {
 
     return (
       <div className="divide-y">
+        {Object.entries(grouped).length === 0 && (
+          <div className="py-6 text-center text-gray-500 italic">
+            No activities found
+          </div>
+        )}
         {Object.entries(grouped).map(([date, items]) => (
           <div key={date} className="py-4">
             {/* Date header */}
@@ -355,7 +468,10 @@ export default function CalendarPage() {
                     )}
                   </div>
                   <div
-                    className={`text-xs ${activityTypeColors[a.type] || 'bg-indigo-100 text-indigo-700'} px-2 py-0.5 rounded-full`}
+                    className={`text-xs ${
+                      activityTypeColors[a.type] ||
+                      'bg-indigo-100 text-indigo-700'
+                    } px-2 py-0.5 rounded-full`}
                   >
                     {a.type}
                   </div>
@@ -370,42 +486,84 @@ export default function CalendarPage() {
 
   return (
     <div className="p-4">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex gap-2">
-          <Button onClick={goPrev}>←</Button>
-          <Button onClick={goNext}>→</Button>
-        </div>
-        <h2 className="text-xl font-semibold">
-          {format(currentDate, 'MMMM yyyy')}
-        </h2>
-        <div className="flex gap-2">
-          <Button
-            variant={view === 'month' ? 'default' : 'outline'}
-            onClick={() => setView('month')}
-          >
-            Month
-          </Button>
-          <Button
-            variant={view === 'week' ? 'default' : 'outline'}
-            onClick={() => setView('week')}
-          >
-            Week
-          </Button>
-          <Button
-            variant={view === 'list' ? 'default' : 'outline'}
-            onClick={() => setView('list')}
-          >
-            List
-          </Button>
-        </div>
-        <div className="flex gap-2">
-          {/* Print button (blue) */}
-          <PrintActivities activities={activities} />
-          <Button onClick={openNew}>+ New</Button>
-        </div>
-      </div>
+      {/* Search */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          handleSearch(searchTerm)
+        }}
+      >
+        <div className="relative w-72 mb-4">
+          <Input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !isSubmitting) {
+                e.preventDefault()
+                setIsSubmitting(true)
+                handleSearch(searchTerm)
+                e.currentTarget.blur()
+                setTimeout(() => setIsSubmitting(false), 1000)
+              }
+            }}
+            className="w-full pr-8 border focus-visible:ring-1 focus:ring-gray-400"
+          />
 
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm('')
+                setView('month')
+                handleSearch('') // 👈 reset results
+                fetchActivities() // 👈 reset results
+              }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <XCircle size={20} className="text-red-400" />
+            </button>
+          )}
+        </div>
+      </form>
+      {/* Calenda Header */}
+      {view !== 'search-results' && (
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex gap-2">
+            <Button onClick={goPrev}>←</Button>
+            <Button onClick={goNext}>→</Button>
+          </div>
+          <h2 className="text-xl font-semibold">
+            {format(currentDate, 'MMMM yyyy')}
+          </h2>
+          <div className="flex gap-2">
+            <Button
+              variant={view === 'month' ? 'default' : 'outline'}
+              onClick={() => setView('month')}
+            >
+              Month
+            </Button>
+            <Button
+              variant={view === 'week' ? 'default' : 'outline'}
+              onClick={() => setView('week')}
+            >
+              Week
+            </Button>
+            <Button
+              variant={view === 'list' ? 'default' : 'outline'}
+              onClick={() => setView('list')}
+            >
+              List
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            {/* Print button (blue) */}
+            <PrintActivities activities={activities} />
+            <Button onClick={openNew}>+ New</Button>
+          </div>
+        </div>
+      )}
       {/* Views */}
       {loading ? (
         <p>Loading...</p>
@@ -413,13 +571,14 @@ export default function CalendarPage() {
         renderMonth()
       ) : view === 'week' ? (
         renderWeek()
+      ) : view === 'search-results' ? (
+        renderSearchResults()
       ) : (
         renderList()
       )}
-
       {/* Sheet Drawer */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent className="w-[420px] sm:w-[500px]">
+        <SheetContent className="w-[420px] sm:w-[500px] mt-13">
           <SheetHeader>
             <SheetTitle className="text-xl font-semibold">
               {isNew ? 'New Activity' : 'Edit Activity'}
@@ -465,6 +624,20 @@ export default function CalendarPage() {
                     </FormItem>
                   )}
                 />
+                {/* Agency / Name */}
+                <FormField
+                  control={form.control}
+                  name="from"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name or Agency</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., DILG" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 {/* Particulars */}
                 <FormField
@@ -499,20 +672,6 @@ export default function CalendarPage() {
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="from"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Time</FormLabel>
-                        <FormControl>
-                          <Input type="time" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
                 {/* Location */}
@@ -535,7 +694,7 @@ export default function CalendarPage() {
 
                 <SheetFooter className="mt-8">
                   <div className="flex w-full items-center justify-between">
-                    {!isNew && (
+                    {/* {!isNew && (
                       <Button
                         variant="destructive"
                         onClick={handleDelete}
@@ -543,7 +702,7 @@ export default function CalendarPage() {
                       >
                         Delete
                       </Button>
-                    )}
+                    )} */}
                     <div className="flex gap-2 ml-auto">
                       <Button variant="outline" onClick={() => setOpen(false)}>
                         Cancel
