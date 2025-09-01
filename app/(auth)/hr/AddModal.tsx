@@ -78,7 +78,26 @@ export const AddModal = ({ isOpen, onClose, editData }: ModalProps) => {
         department: data.department
       }
 
-      // If exists (editing), update it
+      // 🔎 Check if id_number already exists
+      const { data: existing, error: checkError } = await supabase
+        .from(table)
+        .select('id, id_number')
+        .eq('id_number', newData.id_number)
+        .maybeSingle()
+
+      if (checkError) {
+        console.error('Error checking id_number:', checkError)
+        toast.error('Error validating employee ID')
+        return
+      }
+
+      // If another record with same id_number exists
+      if (existing && existing.id !== editData?.id) {
+        toast.error('ID number already exists for another employee')
+        return
+      }
+
+      // ✅ Safe to proceed
       if (editData?.id) {
         const { error } = await supabase
           .from(table)
