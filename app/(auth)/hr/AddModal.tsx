@@ -11,6 +11,14 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import { departments } from '@/lib/constants'
 import { useAppDispatch } from '@/lib/redux/hook'
 import { addItem, updateList } from '@/lib/redux/listSlice'
 import { supabase } from '@/lib/supabase/client'
@@ -268,17 +276,24 @@ export const AddModal = ({ isOpen, onClose, editData }: ModalProps) => {
                       name="department"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="app__formlabel_standard">
-                            Department
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              className="app__input_standard"
-                              placeholder="Department"
-                              type="text"
-                              {...field}
-                            />
-                          </FormControl>
+                          <FormLabel>Department</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Department" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {departments.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}

@@ -26,16 +26,18 @@ export function AppSidebar() {
       title: 'Home',
       url: '/home',
       icon: Home
-    },
-    {
-      title: 'Calendar',
-      url: '/calendar',
-      icon: Calendar
     }
   ]
 
-  // Only add HR if user.id === 1
-  if (user?.system_user_id === 1) {
+  if (user?.type === 'super admin' || user?.type === 'admin') {
+    items.push({
+      title: 'Calendar',
+      url: '/calendar',
+      icon: Calendar
+    })
+  }
+
+  if (user?.type === 'super admin' || user?.type === 'hr') {
     items.push({
       title: 'HR - Employees',
       url: '/hr',

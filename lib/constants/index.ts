@@ -6,7 +6,28 @@ export const activityTypeColors: Record<string, string> = {
   Barangay: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
 }
 export const departments = [
-  'Office of the City Mayor',
-  'City Administrator Office',
-  'City Accountant Office'
+  'CMO',
+  'CADMO',
+  'CHRMO',
+  'CEEO',
+  'CEEO-OCPM',
+  'CEEO-IBJT',
+  'CEEO-SH',
+  'CPDO',
+  'CGSO',
+  'CCRO',
+  'CBO',
+  'CACCO',
+  'CTO',
+  'CASSO',
+  'CLO',
+  'CHO',
+  'SMLH',
+  'CSWD',
+  'CVO',
+  'CAGRO',
+  'CEO',
+  'CTRSMO',
+  'SWEMO',
+  'CCO'
 ]
