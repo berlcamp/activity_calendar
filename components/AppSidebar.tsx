@@ -20,30 +20,15 @@ export function AppSidebar() {
 
   const user = useAppSelector((state) => state.user.user)
 
-  // Menu items
   const items = [
-    {
-      title: 'Home',
-      url: '/home',
-      icon: Home
-    }
+    { title: 'Home', url: '/home', icon: Home },
+    ...(user?.type === 'super admin' || user?.type === 'admin'
+      ? [{ title: 'Calendar', url: '/calendar', icon: Calendar }]
+      : []),
+    ...(user?.type === 'super admin' || user?.type === 'hr'
+      ? [{ title: 'HR - Employees', url: '/hr', icon: Users2 }]
+      : [])
   ]
-
-  if (user?.type === 'super admin' || user?.type === 'admin') {
-    items.push({
-      title: 'Calendar',
-      url: '/calendar',
-      icon: Calendar
-    })
-  }
-
-  if (user?.type === 'super admin' || user?.type === 'hr') {
-    items.push({
-      title: 'HR - Employees',
-      url: '/hr',
-      icon: Users2
-    })
-  }
 
   return (
     <Sidebar className="pt-13">
