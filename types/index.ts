@@ -31,4 +31,5 @@ export interface Employee {
   middlename: string
   lastname: string
   department: string
+  type: string
 }

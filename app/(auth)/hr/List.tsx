@@ -74,6 +74,7 @@ export const List = ({}) => {
             <th className="app__th"></th>
             <th className="app__th">Name</th>
             <th className="app__th">ID No</th>
+            <th className="app__th">Type</th>
             <th className="app__th">Department</th>
           </tr>
         </thead>
@@ -111,6 +112,7 @@ export const List = ({}) => {
                 </div>
               </td>
               <td className="app__td">{item.id_number}</td>
+              <td className="app__td">{item.type}</td>
               <td className="app__td">{item.department}</td>
             </tr>
           ))}

@@ -38,6 +38,7 @@ type FormType = {
   lastname: string
   id_number: string
   department: string
+  type: string
 }
 const table = 'employees'
 const title = 'Employee'
@@ -53,7 +54,8 @@ const FormSchema = z.object({
   middlename: z.string().optional(),
   lastname: z.string().min(1, 'Lastname is required'),
   id_number: z.string().min(1, 'ID No is required'),
-  department: z.string().min(1, 'Department is required')
+  department: z.string().min(1, 'Department is required'),
+  type: z.string().min(1, 'Type is required')
 })
 
 export const AddModal = ({ isOpen, onClose, editData }: ModalProps) => {
@@ -68,7 +70,8 @@ export const AddModal = ({ isOpen, onClose, editData }: ModalProps) => {
       middlename: '',
       lastname: '',
       id_number: '',
-      department: ''
+      department: '',
+      type: ''
     }
   })
 
@@ -83,6 +86,7 @@ export const AddModal = ({ isOpen, onClose, editData }: ModalProps) => {
         middlename: data.middlename,
         lastname: data.lastname,
         id_number: data.id_number,
+        type: data.type,
         department: data.department
       }
 
@@ -149,6 +153,7 @@ export const AddModal = ({ isOpen, onClose, editData }: ModalProps) => {
       middlename: editData?.middlename || '',
       lastname: editData?.lastname || '',
       id_number: editData?.id_number || '',
+      type: editData?.type || '',
       department: editData?.department || ''
     })
   }, [form, editData, isOpen])
@@ -269,6 +274,37 @@ export const AddModal = ({ isOpen, onClose, editData }: ModalProps) => {
                         )}
                       />
                     </div>
+                  </div>
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type</FormLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Regular">Regular</SelectItem>
+                              <SelectItem value="Job Order">
+                                Job Order
+                              </SelectItem>
+                              <SelectItem value="Contract of Service">
+                                Contract of Service
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <div>
                     <FormField
