@@ -439,8 +439,8 @@ export default function CalendarPage() {
             No activities found
           </div>
         )}
-        {Object.entries(grouped).map(([date, items]) => (
-          <div key={date} className="py-4">
+        {Object.entries(grouped).map(([date, items], idx) => (
+          <div key={idx} className="py-4">
             {/* Date header */}
             <div className="flex items-baseline mb-2">
               <div className="text-3xl font-bold text-indigo-600 w-12 text-center">
