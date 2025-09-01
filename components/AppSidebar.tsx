@@ -13,28 +13,35 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-
-// Menu items.
-const items = [
-  {
-    title: 'Home',
-    url: '/home',
-    icon: Home
-  },
-  {
-    title: 'Calendar',
-    url: '/calendar',
-    icon: Calendar
-  },
-  {
-    title: 'HR - Employees',
-    url: '/hr',
-    icon: Users2
-  }
-]
+import { useAppSelector } from '@/lib/redux/hook'
 
 export function AppSidebar() {
   const pathname = usePathname()
+
+  const user = useAppSelector((state) => state.user.user)
+
+  // Menu items
+  const items = [
+    {
+      title: 'Home',
+      url: '/home',
+      icon: Home
+    },
+    {
+      title: 'Calendar',
+      url: '/calendar',
+      icon: Calendar
+    }
+  ]
+
+  // Only add HR if user.id === 1
+  if (user?.system_user_id === 1) {
+    items.push({
+      title: 'HR - Employees',
+      url: '/hr',
+      icon: Users2
+    })
+  }
 
   return (
     <Sidebar className="pt-13">
