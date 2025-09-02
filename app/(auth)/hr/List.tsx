@@ -27,15 +27,15 @@ export const List = ({}) => {
   const [selectedItem, setSelectedItem] = useState<ItemType | null>(null)
 
   // Handle opening the confirmation modal for deleting a supplier
-  const handleDeleteConfirmation = (item: ItemType) => {
-    setSelectedItem(item)
-    setIsModalOpen(true)
-  }
+  // const handleDeleteConfirmation = (item: ItemType) => {
+  //   setSelectedItem(item)
+  //   setIsModalOpen(true)
+  // }
 
-  const handleEdit = (item: ItemType) => {
-    setSelectedItem(item)
-    setModalAddOpen(true)
-  }
+  // const handleEdit = (item: ItemType) => {
+  //   setSelectedItem(item)
+  //   setModalAddOpen(true)
+  // }
 
   const handleViewQR = (item: ItemType) => {
     setSelectedItem(item)
@@ -95,7 +95,7 @@ export const List = ({}) => {
                   >
                     View QR
                   </span>
-                  <span>|</span>
+                  {/* <span>|</span>
                   <span
                     className="text-xs text-blue-800 cursor-pointer font-medium"
                     onClick={() => handleEdit(item)}
@@ -108,7 +108,7 @@ export const List = ({}) => {
                     onClick={() => handleDeleteConfirmation(item)}
                   >
                     Delete
-                  </span>
+                  </span> */}
                 </div>
               </td>
               <td className="app__td">{item.id_number}</td>

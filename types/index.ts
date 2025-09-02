@@ -32,4 +32,19 @@ export interface Employee {
   lastname: string
   department: string
   type: string
+  employee_status: string
+  designation: string
+  item_number: string
+  position_level: string
+  original_appointment: string
+  salary_grade: string
+  transfer_date: string
+  promotion_date: string
+  birthday: string
+  office_code: string
+  old_item_number: string
+  office_assignment: string
+  rate: string
+  suffix: string
+  gender: string
 }

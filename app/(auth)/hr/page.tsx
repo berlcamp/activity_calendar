@@ -70,9 +70,9 @@ export default function Page() {
     <div>
       <div className="app__title">
         <h1 className="text-3xl font-semibold">Employees</h1>
-        <Button onClick={() => setModalAddOpen(true)} className="ml-auto">
+        {/* <Button onClick={() => setModalAddOpen(true)} className="ml-auto">
           Add Employee
-        </Button>
+        </Button> */}
       </div>
 
       <Filter filter={filter} setFilter={setFilter} />

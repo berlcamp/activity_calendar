@@ -278,37 +278,6 @@ export const AddModal = ({ isOpen, onClose, editData }: ModalProps) => {
                   <div>
                     <FormField
                       control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Type</FormLabel>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Regular">Regular</SelectItem>
-                              <SelectItem value="Job Order">
-                                Job Order
-                              </SelectItem>
-                              <SelectItem value="Contract of Service">
-                                Contract of Service
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <FormField
-                      control={form.control}
                       name="department"
                       render={({ field }) => (
                         <FormItem>
