@@ -75,27 +75,31 @@ export const List = ({}) => {
             <th className="app__th">Name</th>
             <th className="app__th">ID No</th>
             <th className="app__th">Type</th>
-            <th className="app__th">Department</th>
+            <th className="app__th">Office Code</th>
           </tr>
         </thead>
         <tbody>
           {list.map((item: ItemType) => (
-            <tr key={item.id} className="app__tr">
+            <tr
+              key={item.id}
+              className="app__tr cursor-pointer"
+              onClick={() => handleViewQR(item)}
+            >
               <td className="w-6 pl-4 app__td"></td>
-              <td className="app__td">
+              <td className="app__td py-4">
                 <div className="font-medium">
                   <span>
                     {item.lastname}, {item.firstname} {item.middlename}
                   </span>
                 </div>
-                <div className="mt-2 space-x-2">
+                {/* <div className="mt-2 space-x-2">
                   <span
                     className="text-xs text-blue-800 cursor-pointer font-medium"
                     onClick={() => handleViewQR(item)}
                   >
                     View QR
-                  </span>
-                  {/* <span>|</span>
+                  </span>  
+                  <span>|</span>
                   <span
                     className="text-xs text-blue-800 cursor-pointer font-medium"
                     onClick={() => handleEdit(item)}
@@ -108,12 +112,12 @@ export const List = ({}) => {
                     onClick={() => handleDeleteConfirmation(item)}
                   >
                     Delete
-                  </span> */}
-                </div>
+                  </span>
+                </div> */}
               </td>
               <td className="app__td">{item.id_number}</td>
-              <td className="app__td">{item.type}</td>
-              <td className="app__td">{item.department}</td>
+              <td className="app__td">{item.employee_status}</td>
+              <td className="app__td">{item.office_code}</td>
             </tr>
           ))}
         </tbody>

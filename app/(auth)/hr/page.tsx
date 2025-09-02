@@ -18,6 +18,7 @@ export default function Page() {
   const [modalAddOpen, setModalAddOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState('')
+  const [filterDepartment, setFilterDepartment] = useState('')
 
   const dispatch = useAppDispatch()
 
@@ -27,16 +28,22 @@ export default function Page() {
 
     const fetchData = async () => {
       setLoading(true)
-      const { data, count, error } = await supabase
+      let query = supabase
         .from('employees')
         .select('*', { count: 'exact' })
         .range((page - 1) * PER_PAGE, page * PER_PAGE - 1)
-        .order('id', { ascending: false })
+        .order('office_code', { ascending: true })
+        .order('lastname', { ascending: true })
+
+      if (filterDepartment) {
+        query = query.eq('office_code', filterDepartment)
+      }
+
+      const { data, count, error } = await query
 
       if (error) {
         console.error(error)
       } else {
-        // Update the list of suppliers in Redux store
         dispatch(addList(data))
         setTotalCount(count || 0)
       }
@@ -64,7 +71,7 @@ export default function Page() {
     } else {
       fetchData()
     }
-  }, [page, filter, dispatch]) // Add `dispatch` to dependency array
+  }, [page, filter, filterDepartment, dispatch]) // Add `dispatch` to dependency array
 
   return (
     <div>
@@ -75,7 +82,11 @@ export default function Page() {
         </Button> */}
       </div>
 
-      <Filter filter={filter} setFilter={setFilter} />
+      <Filter
+        filter={filter}
+        setFilter={setFilter}
+        setFilterDepartment={setFilterDepartment}
+      />
 
       <div className="mt-4 py-2 text-xs border-t border-gray-200 text-gray-500">
         Showing {Math.min((page - 1) * PER_PAGE + 1, totalCount)} to{' '}
