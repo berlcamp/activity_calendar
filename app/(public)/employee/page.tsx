@@ -1,9 +1,3 @@
-import { Component } from 'react'
-
-export class page extends Component {
-  render() {
-    return <div>page</div>
-  }
+export default function page() {
+  return <div>404</div>
 }
-
-export default page
